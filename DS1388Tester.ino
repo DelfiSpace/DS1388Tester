@@ -24,6 +24,8 @@ unsigned char year;
 unsigned char test;   //use to check for time valid
 unsigned char mode;   //time format 0: 12-hour mode(AM) 1: 12-hour mode(PM) 2: 24-hour mode
 
+unsigned char init_time[8];
+
 void setup()
 {
   wire.begin();          // initialize I2C master
@@ -38,9 +40,27 @@ void setup()
 
   //time initialisation
   /*24-hour format*/
-  DS_1.init_time(HOUR_MODE_24, (TEN | SEVEN), (TEN | TWO), (THIRTY | ONE), SEVEN, (TWENTY | THREE), (FIFTY | NINE), (FIFTY | NINE), ZERO);
+  init_time[0] = 17;
+  init_time[1] = 12;
+  init_time[2] = 31;
+  init_time[3] = 7;
+  init_time[4] = 23;
+  init_time[5] = 59;
+  init_time[6] = 59;
+  init_time[7] = 0;
+
+  DS_1.init_time(HOUR_MODE_24, init_time);
+
   /*12-hour format*/
-  //DS_1.init_time(HOUR_MODE_12, (TEN | SEVEN), (TEN | TWO), (THIRTY | ONE), SEVEN, (PM | TEN | ONE), (FIFTY | NINE), (FIFTY | NINE), ZERO);
+  //  init_time[0] = 17;
+  //  init_time[1] = 12;
+  //  init_time[2] = 31;
+  //  init_time[3] = 7;
+  //  init_time[4] = 11;
+  //  init_time[5] = 59;
+  //  init_time[6] = 59;
+  //  init_time[7] = 0;
+  //  DS_1.init_time(HOUR_MODE_12 | PM, init_time);
 
   test = DS_1.time_valid();
 
@@ -55,9 +75,9 @@ void setup()
     serial.print("No. Reinitialise time and clearing flag");
     serial.println();
     /*24-hour format*/
-    DS_1.init_time(HOUR_MODE_24, (TEN | SEVEN), (TEN | TWO), (THIRTY | ONE), SEVEN, (TWENTY | THREE), (FIFTY | NINE), (FIFTY | NINE), ZERO);
+    DS_1.init_time(HOUR_MODE_24, init_time);
     /*12-hour format*/
-    //DS_1.init_time(HOUR_MODE_12, (TEN | SEVEN), (TEN | TWO), (THIRTY | ONE), SEVEN, (PM | TEN | ONE), (FIFTY | NINE), (FIFTY | NINE), ZERO);
+    //    DS_1.init_time(HOUR_MODE_12 | PM, init_time);
     DS_1.OSC_clear_flag();    //clear the flag after initialisation
   }
 
@@ -99,14 +119,14 @@ void loop()
 {
   mode = DS_1.get_time();   //Get the time from RTC
 
-  hundredth_sec = DS_1.date[0];
-  sec = DS_1.date[1];
-  mins = DS_1.date[2];
-  hr = DS_1.date[3];
-  day_of_week = DS_1.date[4];
-  date_1 = DS_1.date[5];
-  month = DS_1.date[6];
-  year = DS_1.date[7];
+  hundredth_sec = DS_1.date[7];
+  sec = DS_1.date[6];
+  mins = DS_1.date[5];
+  hr = DS_1.date[4];
+  day_of_week = DS_1.date[3];
+  date_1 = DS_1.date[2];
+  month = DS_1.date[1];
+  year = DS_1.date[0];
 
   serial.print(year, DEC);
   serial.print("\t");
